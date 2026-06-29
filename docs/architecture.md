@@ -1,20 +1,12 @@
-# WarrantLab Architecture
+# Architecture
 
-## Core Principle
+## Layers
 
-WarrantLab is a Decision Engine.
-
-The architecture is designed to keep business logic independent from data providers and the user interface.
-
----
-
-## System Architecture
-
-Frontend (Vue)
+Frontend Vue
 
 ↓
 
-Backend API (Node.js)
+Backend API Node
 
 ↓
 
@@ -28,50 +20,48 @@ Calculator Engine
 
 Ranking Engine
 
----
+## Rule
 
-## Provider Layer
-
-Supported providers:
-
-- TWSE
-- Fugle
-
-Future providers:
-
-- Broker APIs
-
-The frontend must never know which provider is used.
-
----
-
-## Calculator Layer
-
-Responsible for:
-
-- Intrinsic Value
-- Premium
-- Leverage
-- ABCDE Scenario
-
-No UI code is allowed here.
-
----
-
-## Ranking Layer
-
-Responsible for selecting the best warrant.
-
-Ranking logic must be transparent and explainable.
-
----
+Each layer has one responsibility.
 
 ## Frontend
 
-Frontend responsibilities:
+Responsible for:
+- input
+- display
+- mode switching
+- favorites later
 
-- Search
-- Display results
-- Show recommendation
+Not responsible for:
+- intrinsic value
+- premium
+- leverage
+- ranking
 
-Frontend must not perform financial calculations.
+## Backend API
+
+Responsible for:
+- routes
+- provider selection
+- composing calculator output
+- returning normalized responses
+
+## Providers
+
+All market data sources are providers.
+
+Current:
+- Mock Provider
+
+Planned:
+- TWSE Provider
+- Fugle Provider
+- Broker Provider
+
+## Calculator
+
+Responsible for all formulas.
+
+## Ranking
+
+Responsible for explainable score.

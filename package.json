@@ -1,0 +1,10 @@
+{
+  "name": "warrantlab",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Decision Engine for Taiwan warrants",
+  "scripts": {
+    "dev:web": "cd apps/web && npm run dev",
+    "dev:api": "cd apps/api && npm run dev"
+  }
+}

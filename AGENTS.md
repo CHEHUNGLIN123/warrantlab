@@ -1,46 +1,61 @@
 # WarrantLab AI Agent Instructions
 
-## Project Goal
+## Product Goal
 
-WarrantLab is a Decision Engine.
+WarrantLab is a Decision Engine for Taiwan warrants.
 
 It is NOT:
-
 - a market information website
-- a warrant quote website
+- a quote table
+- a broker clone
 
-Its purpose is to help users choose the best warrant.
+It helps users decide which warrant is most suitable.
 
----
+## Architecture Rules
 
-## Architecture Principles
+- Frontend must not perform financial calculations.
+- Financial formulas live in `packages/calculator`.
+- Domain types live in `packages/domain`.
+- Provider abstractions live in `packages/providers`.
+- API orchestrates providers and calculators.
+- UI should not know whether data comes from TWSE, Fugle, mock data, or a broker.
+- Ranking must be transparent and explainable.
 
-- Frontend never performs financial calculations.
-- Calculator is independent from UI.
-- Providers are replaceable.
-- The application must not depend on a single data source.
+## Current Release
 
----
+v0.2 is a runnable MVP skeleton.
 
-## Data Providers
+Primary user flow:
 
-Current:
+1. User inputs stock symbol, for example `2330`.
+2. API returns stock data.
+3. API returns related call warrants.
+4. Calculator computes:
+   - intrinsic value
+   - time value
+   - premium
+   - leverage
+   - ABCDE scenario returns
+5. Ranking engine sorts warrants.
+6. Frontend displays:
+   - best recommendation
+   - all ranked warrants
 
-- TWSE
-- Fugle
+## Development Rules for Codex
 
-Future:
+Before coding:
+1. Read this file.
+2. Read all files in `docs/`.
+3. Preserve the architecture unless explicitly instructed.
 
-- Broker APIs
+Do not:
+- move calculator logic into Vue
+- hardcode future provider assumptions in UI
+- overcomplicate v0.2
+- add broker order functionality
 
----
-
-## Development Rules
-
-Always follow the documents inside `/docs`.
-
-Do not redesign the architecture unless requested.
-
-Keep the code clean and modular.
-
-Always explain major implementation decisions.
+Do:
+- keep code simple
+- keep MVP runnable
+- update docs when architecture changes
+- explain major changes in commit message
