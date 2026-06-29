@@ -1,70 +1,53 @@
-# WarrantLab Product Definition
+# Product Definition
 
 ## Vision
 
 From searching warrants to choosing warrants.
 
-WarrantLab is a decision engine for Taiwan warrants.
+## What WarrantLab Is
 
-It helps users identify the most suitable warrant instead of simply displaying market data.
+WarrantLab is a Decision Engine for Taiwan warrants.
 
----
+It helps users answer:
 
-## Product Goal
+> Which warrant is most suitable for this stock today?
 
-Input a stock symbol.
+## MVP Flow
 
-↓
-
-Retrieve the underlying stock price.
+Input stock symbol
 
 ↓
 
-Analyze all related call warrants.
+Get underlying stock price
+
+↓
+
+Analyze related call warrants
 
 ↓
 
 Calculate:
-
 - Intrinsic Value
 - Premium
 - Leverage
-- Scenario (ABCDE)
+- ABCDE scenario returns
 
 ↓
 
-Rank all warrants.
+Rank warrants
 
 ↓
 
-Recommend the best warrant.
-
----
-
-## MVP
-
-### v0.1
-
-- Search stock
-- Display stock price
-- Display all warrants
-- Ranking
-- Recommendation
-
----
+Recommend the best one
 
 ## Design Principle
 
-This is NOT an information website.
+The homepage should help users make a decision within seconds.
 
-This is a Decision Engine.
+Show:
+- search
+- stock price
+- best recommendation
+- ranked warrant list
 
-The homepage should help users make decisions within seconds.
-
----
-
-## Success Metric
-
-The user can answer one question:
-
-> Which warrant should I buy today?
+Avoid overwhelming users with technical fields on the first screen.

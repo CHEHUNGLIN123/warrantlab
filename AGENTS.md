@@ -1,46 +1,10 @@
-# WarrantLab AI Agent Instructions
+# WarrantLab Phase 1 Agent Instructions
 
-## Project Goal
+This release is a frontend-only deployable demo.
 
-WarrantLab is a Decision Engine.
-
-It is NOT:
-
-- a market information website
-- a warrant quote website
-
-Its purpose is to help users choose the best warrant.
-
----
-
-## Architecture Principles
-
-- Frontend never performs financial calculations.
-- Calculator is independent from UI.
-- Providers are replaceable.
-- The application must not depend on a single data source.
-
----
-
-## Data Providers
-
-Current:
-
-- TWSE
-- Fugle
-
-Future:
-
-- Broker APIs
-
----
-
-## Development Rules
-
-Always follow the documents inside `/docs`.
-
-Do not redesign the architecture unless requested.
-
-Keep the code clean and modular.
-
-Always explain major implementation decisions.
+Rules:
+- Keep it deployable on Vercel.
+- Keep mock data in `src/mockData.js`.
+- Keep formulas in `src/calculator.js`.
+- Do not add backend in Phase 1.
+- UI must be mobile-first.
