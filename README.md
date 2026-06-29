@@ -1,72 +1,29 @@
-# WarrantLab
+# WarrantLab Phase 1
 
-A Decision Engine for Taiwan warrants.
+第一個可部署、可用 iPhone Safari 試用的 WarrantLab Demo。
 
-## Vision
+## 功能
 
-From searching warrants to choosing warrants.
+- 輸入股票代號
+- 顯示標的價格
+- 顯示最佳權證推薦
+- 顯示全部權證排序
+- 手機版 UI
+- 可部署到 Vercel
 
-## v0.2 Release Scope
+## Demo 內建代號
 
-This starter contains a runnable MVP skeleton:
+- 2330 台積電
+- 2317 鴻海
+- 2454 聯發科
 
-- Vue 3 frontend
-- Node + Express API
-- Monorepo-style folder structure
-- Domain types
-- Calculator package
-- Provider abstraction
-- Mock TWSE/Fugle-ready provider structure
-- First vertical slice:
-  - input stock symbol
-  - fetch stock info
-  - fetch mock warrants
-  - calculate intrinsic value, premium, leverage, ABCDE scenarios
-  - rank warrants
-  - display recommendation + all warrants
-
-## Quick Start
-
-### API
+## 本機測試
 
 ```bash
-cd apps/api
 npm install
 npm run dev
 ```
 
-API runs at:
+## 部署
 
-```txt
-http://localhost:3000
-```
-
-### Web
-
-Open another terminal:
-
-```bash
-cd apps/web
-npm install
-npm run dev
-```
-
-Web runs at:
-
-```txt
-http://localhost:5173
-```
-
-## First Test
-
-1. Start API.
-2. Start Web.
-3. Enter `2330`.
-4. Click Analyze.
-5. You should see stock info and ranked warrants.
-
-## Important
-
-This version uses mock data.
-
-Real TWSE / Fugle integration belongs to future sprints.
+推上 GitHub 後，用 Vercel Import Project 部署。
