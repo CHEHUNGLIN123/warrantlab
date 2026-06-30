@@ -1,59 +1,43 @@
 <script setup>
 import { computed, ref } from "vue";
 import { stocks, warrants } from "./mockData";
-import { rankWarrants } from "./calculator";
+import { rankWarrants, formatPercent, formatNumber } from "./calculator";
 
 const symbol = ref("2330");
-const view = ref("recommend");
-const stock = ref(null);
-const ranked = ref([]);
+const view = ref("top5");
 const searched = ref(false);
 
-const top = computed(() => ranked.value[0] || null);
+const stock = computed(() => stocks[symbol.value.trim()] || null);
 
-function pct(value) {
-  if (typeof value !== "number") return "-";
-  const sign = value > 0 ? "+" : "";
-  return `${sign}${(value * 100).toFixed(0)}%`;
-}
+const ranked = computed(() => {
+  if (!stock.value) return [];
+  return rankWarrants(
+    warrants.filter((w) => w.underlying === stock.value.symbol),
+    stock.value
+  );
+});
 
-function num(value) {
-  if (typeof value !== "number") return "-";
-  return value.toFixed(2);
-}
+const top5 = computed(() => ranked.value.slice(0, 5));
 
 function analyze() {
-  const normalized = symbol.value.trim();
-  const found = stocks[normalized];
   searched.value = true;
-
-  if (!found) {
-    stock.value = null;
-    ranked.value = [];
-    return;
-  }
-
-  stock.value = found;
-  ranked.value = rankWarrants(
-    warrants.filter((w) => w.underlying === normalized),
-    found
-  );
+  view.value = "top5";
 }
-
-analyze();
 </script>
 
 <template>
   <main class="app">
     <header class="hero">
-      <p class="eyebrow">WarrantLab Phase 1</p>
-      <h1>權證決策引擎</h1>
-      <p class="sub">從「查權證」變成「選權證」</p>
+      <p class="eyebrow">WarrantLab Sprint 2C Beta</p>
+      <h1>認購權證 Top 5 決策輔助</h1>
+      <p class="sub">ABCDE 50%｜含金量 30%｜剩餘天數 20%</p>
 
       <div class="search">
-        <input v-model="symbol" inputmode="numeric" placeholder="2330" />
+        <input v-model="symbol" inputmode="numeric" placeholder="輸入 2330 / 2454 / 6770" />
         <button @click="analyze">分析</button>
       </div>
+
+      <p class="notice dark">Demo / mock data，僅供決策輔助，不是投資建議。</p>
     </header>
 
     <section v-if="stock" class="stock-card">
@@ -65,53 +49,65 @@ analyze();
       <div class="price">{{ stock.price }}</div>
     </section>
 
-    <section v-if="!stock && searched" class="card">
-      目前 Phase 1 內建 2330、2317、2454。請先輸入 2330 測試。
+    <section v-else-if="searched" class="card">
+      目前支援 2330 台積電、2454 聯發科、6770 力積電。
     </section>
 
-    <nav v-if="ranked.length" class="tabs">
-      <button :class="{ active: view === 'recommend' }" @click="view='recommend'">🔥 推薦</button>
-      <button :class="{ active: view === 'all' }" @click="view='all'">🧾 全部</button>
+    <nav v-if="stock" class="tabs">
+      <button :class="{ active: view === 'top5' }" @click="view = 'top5'">🔥 Top 5</button>
+      <button :class="{ active: view === 'all' }" @click="view = 'all'">🧾 全部權證</button>
     </nav>
 
-    <section v-if="top && view === 'recommend'" class="card best">
-      <p class="eyebrow">最佳推薦</p>
-      <h2>{{ top.warrant.name }}</h2>
-      <p class="muted">{{ top.warrant.symbol }}｜{{ top.reason }}</p>
+    <section v-if="stock && view === 'top5'" class="list">
+      <article v-for="(item, index) in top5" :key="item.symbol" class="card best">
+        <div class="row">
+          <div>
+            <p class="rank">TOP {{ index + 1 }}</p>
+            <h3>{{ item.name }}</h3>
+            <p class="muted">{{ item.symbol }}｜履約 {{ item.strikePrice }}｜到期 {{ item.expiryDate }}</p>
+          </div>
+          <strong class="score">WLS {{ formatNumber(item.score, 1) }}</strong>
+        </div>
 
-      <div class="big-metric">
-        <span>E 情境：標的 +30%</span>
-        <strong>{{ pct(top.analysis.scenario.E) }}</strong>
-      </div>
+        <div class="grid">
+          <div><span>剩餘天數</span><strong>{{ item.remainingDays }} 天</strong></div>
+          <div><span>內含價值</span><strong>{{ formatNumber(item.intrinsicValue) }}</strong></div>
+          <div><span>含金量</span><strong>{{ formatPercent(item.premium) }}</strong></div>
+          <div><span>平均情境</span><strong>{{ formatPercent(item.scenarioAverage) }}</strong></div>
+        </div>
 
-      <div class="grid">
-        <div><span>Score</span><strong>{{ num(top.score) }}</strong></div>
-        <div><span>內含價值</span><strong>{{ num(top.analysis.intrinsicValue) }}</strong></div>
-        <div><span>含金量</span><strong>{{ pct(top.analysis.premium) }}</strong></div>
-        <div><span>C 情境</span><strong>{{ pct(top.analysis.scenario.C) }}</strong></div>
-      </div>
+        <div class="scenario">
+          <div v-for="key in ['A','B','C','D','E']" :key="key">
+            <span>{{ key }}</span>
+            <strong>{{ formatPercent(item.scenarios[key]) }}</strong>
+          </div>
+        </div>
 
-      <p class="notice">Phase 1 使用 mock data，僅供產品試用，不是投資建議。</p>
+        <div class="reason">
+          <p>推薦理由</p>
+          <ul>
+            <li v-for="reason in item.reason" :key="reason">{{ reason }}</li>
+          </ul>
+        </div>
+      </article>
     </section>
 
-    <section v-if="view === 'all'" class="list">
-      <article v-for="(item, index) in ranked" :key="item.warrant.symbol" class="card">
+    <section v-if="stock && view === 'all'" class="list">
+      <article v-for="(item, index) in ranked" :key="item.symbol" class="card">
         <div class="row">
           <div>
             <p class="rank">#{{ index + 1 }}</p>
-            <h3>{{ item.warrant.name }}</h3>
-            <p class="muted">
-              {{ item.warrant.symbol }}｜履約 {{ item.warrant.strikePrice }}｜到期 {{ item.warrant.expiryDate }}
-            </p>
+            <h3>{{ item.name }}</h3>
+            <p class="muted">{{ item.symbol }}｜履約 {{ item.strikePrice }}｜到期 {{ item.expiryDate }}</p>
           </div>
-          <strong class="score">{{ num(item.score) }}</strong>
+          <strong class="score">{{ formatNumber(item.score, 1) }}</strong>
         </div>
 
         <div class="grid small">
-          <div><span>內含</span><strong>{{ num(item.analysis.intrinsicValue) }}</strong></div>
-          <div><span>含金量</span><strong>{{ pct(item.analysis.premium) }}</strong></div>
-          <div><span>C</span><strong>{{ pct(item.analysis.scenario.C) }}</strong></div>
-          <div><span>E</span><strong>{{ pct(item.analysis.scenario.E) }}</strong></div>
+          <div><span>天數</span><strong>{{ item.remainingDays }}</strong></div>
+          <div><span>內含</span><strong>{{ formatNumber(item.intrinsicValue) }}</strong></div>
+          <div><span>含金量</span><strong>{{ formatPercent(item.premium) }}</strong></div>
+          <div><span>E</span><strong>{{ formatPercent(item.scenarios.E) }}</strong></div>
         </div>
       </article>
     </section>
